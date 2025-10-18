@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import './ColorBoard.css';
 
 const ROWS = 4;
 const COLS = 5;
@@ -18,27 +19,29 @@ function ColorBoard() {
       }))
     )
   );
+
   const onBoardClick = (i: number, j: number) => {
-    const boardCopy = JSON.parse(JSON.stringify(board));
-    boardCopy[i][j].checked = !boardCopy[i][j].checked;
-    setBoard(boardCopy);
+    const newBoard = board.map((row, rowIndex) =>
+      row.map((cell, colIndex) =>
+        rowIndex === i && colIndex === j
+          ? { ...cell, checked: !cell.checked }
+          : cell
+      )
+    );
+    setBoard(newBoard);
   };
+
   return (
-    <div>
+    <div className="color-board">
       {board.map((row, i) => (
-        <div key={i} style={{ display: "flex" }}>
-          {row.map((col, j) => (
+        <div key={i} className="board-row">
+          {row.map((cell, j) => (
             <div
               key={j}
+              className={`board-cell ${cell.checked ? "checked" : "unchecked"}`}
               onClick={() => onBoardClick(i, j)}
-              style={{
-                border: "1px solid white",
-                padding: "2px",
-                margin: "2px",
-                color: col.checked ? "yellow" : "red",
-              }}
             >
-              {col.checked ? "X" : "O"}
+              {cell.checked ? "X" : "O"}
             </div>
           ))}
         </div>

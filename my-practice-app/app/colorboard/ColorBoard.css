@@ -1,0 +1,25 @@
+.color-board {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.board-row {
+  display: flex;
+}
+
+.board-cell {
+  border: 1px solid white;
+  padding: 4px;
+  margin: 2px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.board-cell.unchecked {
+  color: red;
+}
+
+.board-cell.checked {
+  color: yellow;
+}
