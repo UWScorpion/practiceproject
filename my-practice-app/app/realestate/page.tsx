@@ -1,40 +1,63 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import base64 from "base-64";
 import House from "./house";
 
 export interface PropertyData {
-  [key: string]:string | string[] | object
+  listingId: string;
+  [key: string]: string | string[] | object;
 }
 
-function RealEstate() {
-  const [data, setData] = useState([]);
+const API_URL = "https://api.simplyrets.com/properties?limit=12";
+const AUTH_HEADER = "Basic " + base64.encode("simplyrets:simplyrets");
+
+const RealEstate = () => {
+  const [properties, setProperties] = useState<PropertyData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    const url = "https://api.simplyrets.com/properties?limit=12";
-    let headers = new Headers();
-    headers.set(
-      "Authorization",
-      "Basic " + base64.encode("simplyrets:simplyrets")
-    );
-    const fetchData = async () => {
-      const req = new Request(url);
-      await fetch(req, { method: "GET", headers })
-        .then((response) => response.json())
-        .then((res) => {
-          console.log(res);
-          setData(res);
+    const fetchProperties = async () => {
+      try {
+        const headers = new Headers({
+          Authorization: AUTH_HEADER,
         });
+
+        const response = await fetch(API_URL, {
+          method: "GET",
+          headers,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        setProperties(result);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError("Failed to load property data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchData();
+
+    fetchProperties();
   }, []);
 
+  if (loading) return <p>Loading properties...</p>;
+  if (error) return <p>{error}</p>;
+
   return (
-    <>
-      {data.map((h: PropertyData) => (
-        <House house={h} key={h.listingId as string}></House>
-      ))}
-    </>
+    <div>
+      {properties.map((property) =>
+        property.listingId ? (
+          <House house={property} key={property.listingId} />
+        ) : null
+      )}
+    </div>
   );
-}
+};
 
 export default RealEstate;

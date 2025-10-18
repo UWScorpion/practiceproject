@@ -4,19 +4,23 @@ import { useState } from "react";
 const ROWS = 4;
 const COLS = 5;
 
+type Cell = {
+  symbol: string;
+  checked: boolean;
+};
+
 function ColorBoard() {
-  const [board, setBoard] = useState(
-    Array.from(Array(ROWS), () =>
-      Array(COLS).fill({
+  const [board, setBoard] = useState<Cell[][]>(
+    Array.from({ length: ROWS }, () =>
+      Array.from({ length: COLS }, () => ({
         symbol: "X",
         checked: false,
-      })
+      }))
     )
   );
   const onBoardClick = (i: number, j: number) => {
     const boardCopy = JSON.parse(JSON.stringify(board));
     boardCopy[i][j].checked = !boardCopy[i][j].checked;
-    console.log(i, j);
     setBoard(boardCopy);
   };
   return (

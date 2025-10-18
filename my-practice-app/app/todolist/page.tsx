@@ -1,39 +1,46 @@
 "use client";
 import { useState } from "react";
 
-const DEFAULT_ITEMS = [
+interface TodoItem {
+  id: string;
+  name: string;
+  checked: boolean;
+};
+
+const DEFAULT_ITEMS: TodoItem[] = [
   { id: "1", name: "apple", checked: false },
   { id: "2", name: "banana", checked: false },
   { id: "3", name: "peach", checked: false },
 ];
 const TodoListPage = () => {
-  const [items, setItems] = useState(DEFAULT_ITEMS);
-  const [addItem, setAddItem] = useState("");
+  const [items, setItems] = useState<TodoItem[]>(DEFAULT_ITEMS);
+  const [newItem, setNewItem] = useState("");
   const addItemToList = () => {
-    if (addItem === "") return;
-    const newitems = [
-      { id: "" + (items.length + 1), name: addItem, checked: false },
-      ...items,
-    ];
-    setItems(newitems);
+    if (newItem === "") return;
+    const item: TodoItem = { id: "" + (items.length + 1), name: newItem, checked: false };
+    setItems((prevItems) => [item, ...prevItems]);
   };
-  const setChecked = (idx: number) => {
-    const newItem = { ...items[idx], checked: !items[idx].checked };
-    const newItems = [...items];
-    newItems[idx] = newItem;
-    setItems(newItems);
+  const toggleChecked = (index: number) => {
+    setItems((prevItems) => {
+      const updatedItems = [...prevItems];
+      updatedItems[index] = {
+        ...updatedItems[index],
+        checked: !updatedItems[index].checked,
+      };
+      return updatedItems;
+    });
   };
 
   const deleteItems = () => {
-    const newitems = items.filter(i=>!i.checked);
-    setItems(newitems);
+    setItems((prevItems) => prevItems.filter((item) => !item.checked));
   };
   return (
     <>
       <input
         type="text"
-        value={addItem}
-        onChange={(e) => setAddItem(e.target.value)}
+        placeholder="Enter item"
+        value={newItem}
+        onChange={(e) => setNewItem(e.target.value)}
       ></input>
       <button onClick={() => addItemToList()}>add</button>
       <ul>
@@ -42,7 +49,7 @@ const TodoListPage = () => {
             <input
               type="checkbox"
               checked={i.checked}
-              onChange={() => setChecked(idx)}
+              onChange={() => toggleChecked(idx)}
             ></input>
             {i.name}
           </li>

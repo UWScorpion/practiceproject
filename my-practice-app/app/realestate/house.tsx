@@ -6,25 +6,45 @@ interface Props {
 }
 
 interface Address {
-    city: string;
-    country: string;
-    crossStreet: string;
-    full: string;
-    postalCode: string;
-    state: string;
-    streetName: string;
-    streetNumberText: string;
-    unit: string;
-  }
+  city?: string;
+  country?: string;
+  crossStreet?: string;
+  full?: string;
+  postalCode?: string;
+  state?: string;
+  streetName?: string;
+  streetNumberText?: string;
+  unit?: string;
+}
 
 function House({ house }: Props) {
-  const getAddress = (address: Address) => {
-    return `${address.full}, ${address.city}, ${address.state}, ${address.country}, ${address.postalCode}`;
+  const address = house.address as Address | undefined;
+  const photos = house.photos as string[] | undefined;
+
+  const getFormattedAddress = (addr?: Address): string => {
+    if (!addr) return "Address not available";
+
+    const parts = [
+      addr.full,
+      addr.city,
+      addr.state,
+      addr.country,
+      addr.postalCode,
+    ];
+
+    return parts.filter(Boolean).join(", ");
   };
+
+  const imageSrc = photos?.[0] ?? "/placeholder.jpg"; // fallback image
+
   return (
-    <div>
-      <img src={(house.photos as string[])[0]} />
-      <div>{getAddress(house.address as Address)}</div>
+    <div className="house-card">
+      <img
+        src={imageSrc}
+        alt="Property"
+        style={{ width: "30%", height: "auto", objectFit: "cover" }}
+      />
+      <div className="house-address">{getFormattedAddress(address)}</div>
     </div>
   );
 }
